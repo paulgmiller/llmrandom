@@ -86,10 +86,8 @@ func collectSamples(ctx context.Context, client openai.Client, cfg runConfig) []
 
 	workers := min(cfg.parallelism, cfg.calls)
 	var wg sync.WaitGroup
-	wg.Add(workers)
-	for worker := 0; worker < workers; worker++ {
-		go func() {
-			defer wg.Done()
+	for range workers {
+		wg.Go(func() {
 			for index := range jobs {
 				number, text, err := callModel(ctx, client, cfg.model)
 				results <- sampleResult{
@@ -99,7 +97,7 @@ func collectSamples(ctx context.Context, client openai.Client, cfg runConfig) []
 					err:    err,
 				}
 			}
-		}()
+		})
 	}
 
 	go func() {
@@ -134,9 +132,8 @@ func callModel(ctx context.Context, client openai.Client, model string) (int, st
 		Input: responses.ResponseNewParamsInputUnion{
 			OfString: openai.String(prompt),
 		},
-		Instructions:    openai.String("Return only one integer from 1 through 10."),
-		MaxOutputTokens: openai.Int(16),
-		Store:           openai.Bool(false),
+		// MaxOutputTokens: openai.Int(16),
+		Store: openai.Bool(false),
 	})
 	if err != nil {
 		return 0, "", err

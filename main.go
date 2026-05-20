@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"math/rand"
 	"os"
 	"regexp"
 	"sort"
@@ -18,7 +19,7 @@ import (
 	"github.com/openai/openai-go/shared"
 )
 
-const prompt = "Pick a randmom number between 1-10"
+const prompt = "With seed %d Pick a randmom number between 1-10"
 
 var numberPattern = regexp.MustCompile(`\b(?:10|[1-9])\b`)
 
@@ -130,7 +131,7 @@ func callModel(ctx context.Context, client openai.Client, model string) (int, st
 	resp, err := client.Responses.New(ctx, responses.ResponseNewParams{
 		Model: shared.ResponsesModel(model),
 		Input: responses.ResponseNewParamsInputUnion{
-			OfString: openai.String(prompt),
+			OfString: openai.String(fmt.Sprintf(prompt, rand.Int())),
 		},
 		// MaxOutputTokens: openai.Int(16),
 		Store: openai.Bool(false),

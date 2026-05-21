@@ -3,7 +3,7 @@
 Calls `gpt-5-mini` 200 times with:
 
 ```text
-Pick a randmom number between 1-10
+Pick a random number between 1-10
 ```
 
 Then prints a terminal histogram of the numbers returned.
